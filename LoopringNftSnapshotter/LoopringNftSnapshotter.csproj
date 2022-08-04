@@ -13,4 +13,10 @@
     <PackageReference Include="RestSharp" Version="107.3.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="metaboys.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
