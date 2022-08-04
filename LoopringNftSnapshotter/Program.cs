@@ -34,7 +34,7 @@ stopWatch.Start();
 foreach(string nftId in nftIds)
 {
     string fullNftId = $"{nftMinterAddress}-{nftType}-{nftTokenAddress}-{nftId}-{nftRoyaltyPercentage}";
-    var accountNftSlots = Tuple.Create(new List<AccountNFTSlot>(), false);
+    Tuple<List<AccountNFTSlot>,bool> accountNftSlots = Tuple.Create(new List<AccountNFTSlot>(), false);
     int page = 0;
     do
     {
