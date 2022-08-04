@@ -14,8 +14,8 @@ string nftRoyaltyPercentage = "5";
 //Initialize objects
 LoopringGraphQLService loopringGraphQLService = new LoopringGraphQLService("https://api.thegraph.com/subgraphs/name/juanmardefago/loopring36");
 List<string> nftIds = new List<string>();
-List<NftHolder> collectionHolders = new List<NftHolder>();
-List<NftHolder> errors = new List<NftHolder>(); //possibly due to being withdrawn to layer 1
+List<NftHolder> nftHolders = new List<NftHolder>();
+List<NftHolder> nftHoldersErrors = new List<NftHolder>(); //possibly due to being withdrawn to layer 1
 
 //Load nfts from text file
 using(StreamReader sr = new StreamReader("nftIds.txt"))
@@ -41,13 +41,13 @@ foreach(string nftId in nftIds)
         accountNftSlots = await loopringGraphQLService.GetNftHolders(fullNftId, skip: page * 25);
         if (accountNftSlots.Count == 0) //No holders or issue with the graph
         {
-            errors.Add(new NftHolder() { address = "Could not find!", fullNftId = fullNftId });
+            nftHoldersErrors.Add(new NftHolder() { address = "Could not find!", fullNftId = fullNftId });
         }
         else
         {
             foreach (var nftHolder in accountNftSlots)
             {
-                collectionHolders.Add(new NftHolder() { address = nftHolder.account!.address, fullNftId = fullNftId, balance = nftHolder.balance.ToString() });
+                nftHolders.Add(new NftHolder() { address = nftHolder.account!.address, fullNftId = fullNftId, balance = nftHolder.balance.ToString() });
             }
         }
         page++;
@@ -63,13 +63,13 @@ string errorCsvName = $"Errors-{dateTime}.csv";
 using (var writer = new StreamWriter(holderCsvName))
 using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
 {
-    csv.WriteRecords(collectionHolders);
+    csv.WriteRecords(nftHolders);
     Console.WriteLine($"Generated Holder Report and can be found in the following location: {AppDomain.CurrentDomain.BaseDirectory + holderCsvName}");
 }
 
 using (var writer = new StreamWriter(errorCsvName))
 using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
 {
-    csv.WriteRecords(errors);
+    csv.WriteRecords(nftHoldersErrors);
     Console.WriteLine($"Generated Error Report and can be found in the following location: {AppDomain.CurrentDomain.BaseDirectory + errorCsvName}");
 }
