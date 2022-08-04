@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Globalization;
 
 
-//Change these
+//Change these for your collection
 string nftType = "0"; // 0 is ERC1155, 1 is ERC721
 string nftMinterAddress = "0x39dc73b6067f33f1225695059512fa889b8cef6b";
 string nftTokenAddress = "0x1d006a27bd82e10f9194d30158d91201e9930420";
@@ -15,7 +15,7 @@ string nftRoyaltyPercentage = "5";
 LoopringGraphQLService loopringGraphQLService = new LoopringGraphQLService("https://api.thegraph.com/subgraphs/name/juanmardefago/loopring36");
 List<string> nftIds = new List<string>();
 List<NftHolder> nftHolders = new List<NftHolder>();
-List<NftHolder> nftHoldersErrors = new List<NftHolder>(); //possibly due to being withdrawn to layer 1
+List<NftHolder> nftHoldersErrors = new List<NftHolder>();
 
 //Load nfts from text file
 using(StreamReader sr = new StreamReader("nftIds.txt"))
