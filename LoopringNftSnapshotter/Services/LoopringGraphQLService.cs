@@ -14,20 +14,13 @@ using RestSharp.Serializers;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Threading;
-using Microsoft.Extensions.Configuration;
 using System.Numerics;
 
-namespace Lexplorer.Services
+namespace LoopringNftSnapshotter.Services
 {
     public class LoopringGraphQLService : IDisposable
     {
         readonly RestClient _client;
-
-        public LoopringGraphQLService(IConfiguration config)
-        {
-            _client = new RestClient(config.GetSection("services:loopringgraph:endpoint").Value);
-        }
-
         public LoopringGraphQLService(string baseUrl)
         {
             _client = new RestClient(baseUrl);
