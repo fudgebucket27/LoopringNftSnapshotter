@@ -1,5 +1,5 @@
 # LoopringNftSnapshotter
-Snapshot NFTs on Loopring using the Subgraph. For a 10 000 NFT collection expect it to take an hour depending on your internet speed.
+Snapshot NFT holders on Loopring using the Subgraph. For a 10 000 NFT collection expect it to take an hour depending on your internet speed.
 
 At the moment this tool is built to work with NFTs minted as 1/1s.
 
