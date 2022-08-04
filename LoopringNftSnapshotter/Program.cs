@@ -40,7 +40,6 @@ foreach(string metaboyNftId in metaboyNftIds)
             metaboyHolders.Add(new NftHolder() { address = nftHolder.account!.address, nftId = metaboyNftId });
         }
     }
-    break;
 }
 stopWatch.Stop();
 Console.WriteLine($"Gathered holders in {stopWatch.Elapsed.ToString("hh\\:mm\\:ss\\.ff")}");
