@@ -10,5 +10,7 @@ namespace LoopringNftSnapshotter.Models
     {
         public string? address { get; set; }
         public string? fullNftId { get; set; }
+
+        public string? balance { get; set; }
     }
 }
