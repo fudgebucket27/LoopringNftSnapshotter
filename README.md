@@ -9,6 +9,6 @@ The included nftIds.txt file needs to be modified with your collection's Nft Ids
 
 Two CSV reports will be output after the snapshot has run, one with the holders and another with errors. The subgraph will not return holders if the NFT is withdrawn to layer 1 or if the fullNftId can not be found, you will find these in the errors CSV report.
 
-You will need an IDE that can compile .NET 6 to use this app.
+You will need an IDE that can compile .NET 6 to use this tool.
 
 
