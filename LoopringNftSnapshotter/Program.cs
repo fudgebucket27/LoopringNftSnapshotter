@@ -37,13 +37,13 @@ foreach(string nftId in nftIds)
     List<AccountNFTSlot> accountNftSlots = await loopringGraphQLService.GetNftHolders(fullNftId);
     if(accountNftSlots.Count == 0) //Issue with the graph
     {
-        errors.Add(new NftHolder() { address = "Could not find!", nftId = fullNftId });
+        errors.Add(new NftHolder() { address = "Could not find!", fullNftId = fullNftId });
     }
     else
     {
         foreach (var nftHolder in accountNftSlots)
         {
-            collectionHolders.Add(new NftHolder() { address = nftHolder.account!.address, nftId = fullNftId });
+            collectionHolders.Add(new NftHolder() { address = nftHolder.account!.address, fullNftId = fullNftId });
         }
     }
 }

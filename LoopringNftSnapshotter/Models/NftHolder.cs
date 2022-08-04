@@ -9,6 +9,6 @@ namespace LoopringNftSnapshotter.Models
     public class NftHolder
     {
         public string? address { get; set; }
-        public string? nftId { get; set; }
+        public string? fullNftId { get; set; }
     }
 }
