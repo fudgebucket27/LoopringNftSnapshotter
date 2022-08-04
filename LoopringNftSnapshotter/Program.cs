@@ -52,7 +52,6 @@ foreach(string nftId in nftIds)
         }
         page++;
     } while (accountNftSlots.Count > 0);
-    break;
 }
 stopWatch.Stop();
 Console.WriteLine($"Gathered holders in {stopWatch.Elapsed.ToString("hh\\:mm\\:ss\\.ff")}");
