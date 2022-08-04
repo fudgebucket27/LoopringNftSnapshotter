@@ -18,7 +18,7 @@ List<NftHolder> collectionHolders = new List<NftHolder>();
 List<NftHolder> errors = new List<NftHolder>(); //possibly due to being withdrawn to layer 1
 
 //Load nfts from text file
-using(StreamReader sr = new StreamReader("metaboys.txt"))
+using(StreamReader sr = new StreamReader("nftIds.txt"))
 {
     string nftId;
     while ((nftId = sr.ReadLine()!) != null)
