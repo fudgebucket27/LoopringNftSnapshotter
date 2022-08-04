@@ -34,24 +34,24 @@ stopWatch.Start();
 foreach(string nftId in nftIds)
 {
     string fullNftId = $"{nftMinterAddress}-{nftType}-{nftTokenAddress}-{nftId}-{nftRoyaltyPercentage}";
-    List<AccountNFTSlot> accountNftSlots = new List<AccountNFTSlot>();
+    var accountNftSlots = Tuple.Create(new List<AccountNFTSlot>(), false);
     int page = 0;
     do
     {
         accountNftSlots = await loopringGraphQLService.GetNftHolders(fullNftId, skip: page * 25);
-        if (accountNftSlots.Count == 0) //No holders or issue with the graph
+        if (accountNftSlots.Item1.Count == 0 && accountNftSlots.Item2 == true) //No holders or issue with the graph
         {
             nftHoldersErrors.Add(new NftHolder() { address = "Could not find!", fullNftId = fullNftId });
         }
         else
         {
-            foreach (var nftHolder in accountNftSlots)
+            foreach (var nftHolder in accountNftSlots.Item1)
             {
                 nftHolders.Add(new NftHolder() { address = nftHolder.account!.address, fullNftId = fullNftId, balance = nftHolder.balance.ToString() });
             }
         }
         page++;
-    } while (accountNftSlots.Count > 0);
+    } while (accountNftSlots.Item1.Count > 0);
 }
 stopWatch.Stop();
 Console.WriteLine($"Gathered holders in {stopWatch.Elapsed.ToString("hh\\:mm\\:ss\\.ff")}");

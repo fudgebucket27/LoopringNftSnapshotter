@@ -342,6 +342,8 @@ namespace LoopringNftSnapshotter.Models
         public Transaction? lastUpdatedAtTransaction { get; set; }
         public List<Transaction>? transactions { get; set; }
         public NonFungibleToken? nft { get; set; }
+
+        public bool error { get; set; } = false;
     }
 
     public class TransactionNFT : Transaction
