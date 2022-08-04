@@ -1,7 +1,7 @@
 # LoopringNftSnapshotter
 Snapshot NFT holders on Loopring using the Subgraph. For a 10 000 NFT collection(1/1 mints) expect it to take an hour depending on your internet speed.
 
-At the moment this tool is built to work with NFTs minted as 1/1s.
+This tool can snapshot holders for NFTs minted as 1/1s or minted an X amount of times.
 
 You will need to modify the nftType, nftMinterAddress, nftTokenAddress and nftRoyaltyPercentage to the appropriate values for your collection.
 
