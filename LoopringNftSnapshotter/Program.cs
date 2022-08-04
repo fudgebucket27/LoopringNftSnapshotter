@@ -46,7 +46,6 @@ foreach(string nftId in nftIds)
             collectionHolders.Add(new NftHolder() { address = nftHolder.account!.address, nftId = fullNftId });
         }
     }
-    break;
 }
 stopWatch.Stop();
 Console.WriteLine($"Gathered holders in {stopWatch.Elapsed.ToString("hh\\:mm\\:ss\\.ff")}");
