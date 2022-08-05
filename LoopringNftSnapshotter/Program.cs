@@ -7,7 +7,7 @@ using System.Globalization;
 
 //Change these for your collection, remember to update nftIds.txt with the list of nft ids
 string nftType = "0"; // 0 is ERC1155, 1 is ERC721
-string nftMinterAddress = "	0x11fe9caf34a9ebf66c3a89724769ae75a65f543d";
+string nftMinterAddress = "0x11fe9caf34a9ebf66c3a89724769ae75a65f543d";
 string nftTokenAddress = "0x8ae4f39a730696a34614e469b6ab101721db2d89";
 string nftRoyaltyPercentage = "10";
 
