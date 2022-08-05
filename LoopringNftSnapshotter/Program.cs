@@ -33,7 +33,15 @@ Stopwatch stopWatch = new Stopwatch();
 stopWatch.Start();
 foreach(string nftId in nftIds)
 {
-    string fullNftId = $"{nftMinterAddress}-{nftType}-{nftTokenAddress}-{nftId}-{nftRoyaltyPercentage}";
+    string fullNftId = "";
+    if (nftId.Contains("-") && nftId.Split('-').Length == 5)
+    {
+        fullNftId = nftId;
+    }
+    else
+    {
+        fullNftId = $"{nftMinterAddress}-{nftType}-{nftTokenAddress}-{nftId}-{nftRoyaltyPercentage}";
+    }
     Tuple<List<AccountNFTSlot>,bool> accountNftSlots = Tuple.Create(new List<AccountNFTSlot>(), false);
     int page = 0;
     do
