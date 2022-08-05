@@ -41,7 +41,7 @@ foreach(string nftId in nftIds)
         accountNftSlots = await loopringGraphQLService.GetNftHolders(fullNftId, skip: page * 25);
         if (accountNftSlots.Item1.Count == 0 && accountNftSlots.Item2 == true) //No holders or issue with the graph
         {
-            nftHoldersErrors.Add(new NftHolder() { address = "Could not find!", fullNftId = fullNftId });
+            nftHoldersErrors.Add(new NftHolder() { address = "N/A", fullNftId = fullNftId });
         }
         else
         {
