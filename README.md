@@ -3,9 +3,9 @@ Snapshot NFT holders on Loopring using the Subgraph. For a 10 000 NFT collection
 
 This tool can snapshot holders for NFTs minted as 1/1s or minted an X amount of times.
 
-You will need to modify the nftType, nftMinterAddress, nftTokenAddress and nftRoyaltyPercentage to the appropriate values for your collection.
+You will need to modify the nftType, nftMinterAddress, nftTokenAddress and nftRoyaltyPercentage to the appropriate values for your collection which you can find on lines 9-12
 
-The included nftIds.txt file needs to be modified with your collection's Nft Ids. On each line you can either put in a single nft id such as:
+Then with the included nftIds.txt file, it needs to be modified with your collection's Nft Ids. On each line you can either put in a single nft id such as:
 ```bash
 0xb34b96e2294f7b79b6af3f576758febcee688977054438328fcf3e76e9fb9742
 ```
