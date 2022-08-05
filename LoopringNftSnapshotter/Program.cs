@@ -23,7 +23,7 @@ using(StreamReader sr = new StreamReader("nftIds.txt"))
     string nftId;
     while ((nftId = sr.ReadLine()!) != null)
     {
-        nftIds.Add(nftId);
+        nftIds.Add(nftId.Trim());
     }
 }
 
@@ -40,7 +40,7 @@ foreach(string nftId in nftIds)
     }
     else
     {
-        fullNftId = $"{nftMinterAddress}-{nftType}-{nftTokenAddress}-{nftId}-{nftRoyaltyPercentage}".Trim();
+        fullNftId = $"{nftMinterAddress.Trim()}-{nftType.Trim()}-{nftTokenAddress.Trim()}-{nftId.Trim()}-{nftRoyaltyPercentage.Trim()}".Trim();
     }
     Tuple<List<AccountNFTSlot>,bool> accountNftSlots = Tuple.Create(new List<AccountNFTSlot>(), false);
     int page = 0;
