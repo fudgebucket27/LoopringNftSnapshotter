@@ -36,11 +36,11 @@ foreach(string nftId in nftIds)
     string fullNftId = "";
     if (nftId.Contains("-") && nftId.Split('-').Length == 5)
     {
-        fullNftId = nftId.Trim();
+        fullNftId = nftId;
     }
     else
     {
-        fullNftId = $"{nftMinterAddress.Trim()}-{nftType.Trim()}-{nftTokenAddress.Trim()}-{nftId.Trim()}-{nftRoyaltyPercentage.Trim()}".Trim();
+        fullNftId = $"{nftMinterAddress.Trim()}-{nftType.Trim()}-{nftTokenAddress.Trim()}-{nftId.Trim()}-{nftRoyaltyPercentage.Trim()}";
     }
     Tuple<List<AccountNFTSlot>,bool> accountNftSlots = Tuple.Create(new List<AccountNFTSlot>(), false);
     int page = 0;
