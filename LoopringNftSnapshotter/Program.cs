@@ -1,4 +1,5 @@
 ﻿using CsvHelper;
+using LoopringNftSnapshotter.Helpers;
 using LoopringNftSnapshotter.Models;
 using LoopringNftSnapshotter.Services;
 using System.Diagnostics;
@@ -49,13 +50,23 @@ foreach(string nftId in nftIds)
         accountNftSlots = await loopringGraphQLService.GetNftHolders(fullNftId, skip: page * 25);
         if (accountNftSlots.Item1.Count == 0 && accountNftSlots.Item2 == true) //No holders or issue with the graph
         {
-            nftHoldersErrors.Add(new NftHolder() { address = "N/A", fullNftId = fullNftId });
+            nftHoldersErrors.Add(new NftHolder() 
+            { recieverAddress = "N/A",
+              fullNftId = fullNftId 
+            });
         }
         else
         {
             foreach (var nftHolder in accountNftSlots.Item1)
             {
-                nftHolders.Add(new NftHolder() { address = nftHolder.account!.address, fullNftId = fullNftId, balance = nftHolder.balance.ToString() });
+                nftHolders.Add(new NftHolder()
+                { recieverAddress = nftHolder.account!.address,
+                    dateRecieved = TimestampConverter.ToUTCString(nftHolder.createdAtTransaction!.block!.timestamp),
+                    transactionId = nftHolder.createdAtTransaction.id,
+                    transactionType = nftHolder.createdAtTransaction.typeName,
+                    fullNftId = fullNftId,
+                    balance = nftHolder.balance.ToString()
+                }) ;
             }
         }
         page++;

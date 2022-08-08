@@ -8,9 +8,14 @@ namespace LoopringNftSnapshotter.Models
 {
     public class NftHolder
     {
-        public string? address { get; set; }
+        public string? dateRecieved { get; set; }
+        public string? transactionId { get; set; }
+        public string? transactionType { get; set; }
+        public string? recieverAddress { get; set; }
         public string? fullNftId { get; set; }
 
         public string? balance { get; set; }
+
+
     }
 }

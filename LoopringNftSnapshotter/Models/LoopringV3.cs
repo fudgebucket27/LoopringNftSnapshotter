@@ -180,7 +180,7 @@ namespace LoopringNftSnapshotter.Models
 
         public string? id { get; set; }
         public string? internalID { get; set; }
-        [JsonProperty(PropertyName = "__typename")]
+        [JsonProperty(PropertyName = "typename")]
         public string? typeName { get; set; }
         public string? data { get; set; }
         public Block? block { get; set; }

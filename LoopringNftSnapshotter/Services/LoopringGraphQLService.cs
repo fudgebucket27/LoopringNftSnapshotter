@@ -1501,6 +1501,13 @@ namespace LoopringNftSnapshotter.Services
                             address
                         }
                     balance
+                      createdAtTransaction {
+                        block {
+                          timestamp
+                        }
+                        id
+                        typename
+                      }
                     }
                 }
              }";
