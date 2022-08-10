@@ -24,6 +24,7 @@ namespace LoopringNftSnapshotter.Services
         public LoopringGraphQLService(string baseUrl)
         {
             _client = new RestClient(baseUrl);
+            _client.AddDefaultHeader("Origin", "https://explorer.loopring.io");
         }
 
         public async Task<BlocksAndProxyDTO?> GetBlocks(int skip, int first, string orderBy = "internalID",

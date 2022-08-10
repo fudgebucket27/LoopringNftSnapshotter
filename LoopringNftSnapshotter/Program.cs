@@ -13,7 +13,7 @@ string nftTokenAddress = "0x8ae4f39a730696a34614e469b6ab101721db2d89";
 string nftRoyaltyPercentage = "10";
 
 //Initialize objects
-LoopringGraphQLService loopringGraphQLService = new LoopringGraphQLService("https://api.thegraph.com/subgraphs/name/juanmardefago/loopring36");
+LoopringGraphQLService loopringGraphQLService = new LoopringGraphQLService("https://gateway.thegraph.com/api/294a874dfcbae25bcca653a7f56cfb63/subgraphs/id/7QP7oCLbEAjejkp7wSLTD1zbRMSiDydAmALksBB5E6i1");
 List<string> nftIds = new List<string>();
 List<NftHolder> nftHolders = new List<NftHolder>();
 List<NftHolder> nftHoldersErrors = new List<NftHolder>();
