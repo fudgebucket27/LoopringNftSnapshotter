@@ -1474,7 +1474,7 @@ namespace LoopringNftSnapshotter.Services
             }
         }
 
-        public async Task<Tuple<List<AccountNFTSlot>, bool>> GetNftHolders(string nftId, int skip = 0, int first = 25, string orderBy = "balance", string orderDirection = "desc", CancellationToken cancellationToken = default)
+        public async Task<List<AccountNFTSlot>> GetNftHolders(string nftId, int skip = 0, int first = 25, string orderBy = "balance", string orderDirection = "desc", CancellationToken cancellationToken = default)
         {
             var nftHolders = @"
             query nftHolders(
@@ -1532,12 +1532,12 @@ namespace LoopringNftSnapshotter.Services
                 var response = await _client.PostAsync(request, cancellationToken);
                 JObject jresponse = JObject.Parse(response.Content!);
                 JToken result = jresponse["data"]!["nonFungibleToken"]!["slots"]!;
-                return Tuple.Create(result.ToObject<List<AccountNFTSlot>>()!, false);
+                return result.ToObject<List<AccountNFTSlot>>()!;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
-                return Tuple.Create(new List<AccountNFTSlot>(), true);
+                return new List<AccountNFTSlot>();
             }
         }
 
