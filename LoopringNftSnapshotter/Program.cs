@@ -33,10 +33,9 @@ Stopwatch stopWatch = new Stopwatch();
 stopWatch.Start();
 foreach(string nftId in nftIds)
 {
-    string fullNftId = "";
     if (nftId.Contains("-") && nftId.Split('-').Length == 5)
     {
-        fullNftId = nftId;
+        //do nothing
     }
     else
     {
@@ -47,12 +46,12 @@ foreach(string nftId in nftIds)
     int page = 0;
     do
     {
-        accountNftSlots = await loopringGraphQLService.GetNftHolders(fullNftId, skip: page * 25, layerOneBlockNumber: layerOneBlockNumber);
+        accountNftSlots = await loopringGraphQLService.GetNftHolders(nftId, skip: page * 25, layerOneBlockNumber: layerOneBlockNumber);
         if (accountNftSlots.Count == 0 && page == 0) //No holders or issue with the graph
         {
             nftHoldersErrors.Add(new NftHolder() 
             { recieverAddress = "N/A",
-              fullNftId = fullNftId 
+              fullNftId = nftId 
             });
         }
         else
@@ -64,7 +63,7 @@ foreach(string nftId in nftIds)
                     dateRecieved = TimestampConverter.ToUTCString(nftHolder.createdAtTransaction!.block!.timestamp),
                     transactionId = nftHolder.createdAtTransaction.id,
                     transactionType = nftHolder.createdAtTransaction.typeName,
-                    fullNftId = fullNftId,
+                    fullNftId = nftId,
                     balance = nftHolder.balance.ToString()
                 }) ;
             }
