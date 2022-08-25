@@ -3,6 +3,8 @@ Snapshot NFT holders on Loopring using the Subgraph. For a 10 000 NFT collection
 
 This tool can snapshot holders for NFTs minted as 1/1s or minted an X amount of times.
 
+You will need an IDE that can handle .NET 6 like Visual Studio 2022 to compile this.
+
 ## Setup
 
 On line 12 there is an option for the layer one block number, leaving this to 0 will default to the latest block. If running over a large collection I highly suggest changing this to a specific layer one block number(ie 15405087) so that the data does not change when a new block gets published.
@@ -17,10 +19,9 @@ Full nft ids on loopring are of the form:
 ```bash
 nftMinterAddress-nftType-nftTokenAddress-nftId-nftRoyaltyPercentage
 ```
+Once you have setup line 12 and input your nft ids you can then run the program in your IDE.
 
 Two CSV reports will be output after the snapshot has run, one with the holders and another with errors. The subgraph will not return holders if the NFT is withdrawn to layer 1 or if the fullNftId can not be found, you will find these in the errors CSV report.
-
-You will need an IDE that can compile .NET 6 to use this tool.
 
 ## Credits
 ItsMonty.eth for help with the subgraph queries
