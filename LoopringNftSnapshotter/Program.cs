@@ -6,11 +6,10 @@ using System.Diagnostics;
 using System.Globalization;
 
 
-//Change these for your collection, remember to update nftIds.txt with the list of nft ids
-string nftType = "0"; // 0 is ERC1155, 1 is ERC721
-string nftMinterAddress = "0x11fe9caf34a9ebf66c3a89724769ae75a65f543d";
-string nftTokenAddress = "0x8ae4f39a730696a34614e469b6ab101721db2d89";
-string nftRoyaltyPercentage = "10";
+//Leave this setting to 0 if you want to grab from the latest layer 1 block,
+//If this snapshot runs for an extended amount of time it might grab data from a more recent block so you might want to specify the block number for the snapshot for your users
+//If you modify this number remember it must be the layer 1 block number, not the layer 2 block number
+int layerOneBlockNumber = 0; 
 
 //Initialize objects
 LoopringGraphQLService loopringGraphQLService = new LoopringGraphQLService("https://gateway.thegraph.com/api/294a874dfcbae25bcca653a7f56cfb63/subgraphs/id/7QP7oCLbEAjejkp7wSLTD1zbRMSiDydAmALksBB5E6i1");
@@ -41,13 +40,14 @@ foreach(string nftId in nftIds)
     }
     else
     {
-        fullNftId = $"{nftMinterAddress.Trim()}-{nftType.Trim()}-{nftTokenAddress.Trim()}-{nftId.Trim()}-{nftRoyaltyPercentage.Trim()}";
+        Console.WriteLine("The full NFT ID needs to be in the form: nftMinterAddress-nftType-nftTokenAddress-nftId-nftRoyaltyPercentage");
+        continue;
     }
     List<AccountNFTSlot> accountNftSlots = new List<AccountNFTSlot>();
     int page = 0;
     do
     {
-        accountNftSlots = await loopringGraphQLService.GetNftHolders(fullNftId, skip: page * 25);
+        accountNftSlots = await loopringGraphQLService.GetNftHolders(fullNftId, skip: page * 25, layerOneBlockNumber: layerOneBlockNumber);
         if (accountNftSlots.Count == 0 && page == 0) //No holders or issue with the graph
         {
             nftHoldersErrors.Add(new NftHolder() 

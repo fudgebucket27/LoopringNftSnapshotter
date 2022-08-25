@@ -1475,7 +1475,7 @@ namespace LoopringNftSnapshotter.Services
             }
         }
 
-        public async Task<List<AccountNFTSlot>> GetNftHolders(string nftId, int skip = 0, int first = 25, string orderBy = "balance", string orderDirection = "desc", CancellationToken cancellationToken = default)
+        public async Task<List<AccountNFTSlot>> GetNftHolders(string nftId, int skip = 0, int layerOneBlockNumber = 0, int first = 25, string orderBy = "balance", string orderDirection = "desc", CancellationToken cancellationToken = default)
         {
             var nftHolders = @"
             query nftHolders(
@@ -1512,21 +1512,84 @@ namespace LoopringNftSnapshotter.Services
                     }
                 }
              }";
-            
+
+            var nftHoldersAtBlockNumber = @"
+            query nftHolders(
+                $skip: Int
+                $first: Int
+                $nftId: String
+                $orderBy: String
+                $orderDirection: String
+                $blockNumber: BigInt
+                $blockHeight: Block_height
+            )
+            {
+                nonFungibleToken(
+                    id: $nftId,
+                    block: $blockHeight
+                ) 
+                {
+                    slots(
+                        skip: $skip
+                        first: $first
+                        orderBy: $orderBy
+                        orderDirection: $orderDirection
+                    ) 
+                    {
+                        account {
+                            id
+                            address
+                        }
+                    balance
+                      createdAtTransaction {
+                        block {
+                          timestamp
+                        }
+                        id
+                        typename
+                      }
+                    }
+                }
+             }";
+
             var request = new RestRequest();
             request.AddHeader("Content-Type", "application/json");
-            JObject jObject = JObject.FromObject(new
+            JObject jObject;
+            if (layerOneBlockNumber == 0) //no block number
             {
-                query = nftHolders,
-                variables = new
+                jObject = JObject.FromObject(new
                 {
-                    first = first,
-                    skip = skip,
-                    nftId = nftId,
-                    orderBy = orderBy,
-                    orderDirection = orderDirection
-                }
-            });
+                    query = nftHolders,
+                    variables = new
+                    {
+                        first = first,
+                        skip = skip,
+                        nftId = nftId,
+                        orderBy = orderBy,
+                        orderDirection = orderDirection
+                    }
+                });
+            }
+            else
+            {
+                jObject = JObject.FromObject(new
+                {
+                    query = nftHoldersAtBlockNumber,
+                    variables = new
+                    {
+                        first = first,
+                        skip = skip,
+                        nftId = nftId,
+                        orderBy = orderBy,
+                        orderDirection = orderDirection,
+                        blockHeight = new
+                        {
+                            number = layerOneBlockNumber,
+                        }
+                    }
+                });
+            }
+
             request.AddStringBody(jObject.ToString(), ContentType.Json);
             try
             {
