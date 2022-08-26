@@ -75,7 +75,7 @@ stopWatch.Stop();
 Console.WriteLine($"Gathered holders in {stopWatch.Elapsed.ToString("hh\\:mm\\:ss\\.ff")}");
 
 //Create CSV report for errors and holders
-string dateTime = DateTime.Now.ToString("yyyy-mm-dd hh-mm-ss");
+string dateTime = DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss");
 string holderCsvName = $"Holders-{dateTime}.csv";
 string errorCsvName = $"Errors-{dateTime}.csv";
 using (var writer = new StreamWriter(holderCsvName))
