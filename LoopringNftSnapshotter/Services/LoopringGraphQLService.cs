@@ -1600,7 +1600,7 @@ namespace LoopringNftSnapshotter.Services
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.Message);
+                Console.WriteLine(ex.Message);
                 return new List<AccountNFTSlot>();
             }
         }
