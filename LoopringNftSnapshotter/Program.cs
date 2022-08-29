@@ -96,7 +96,7 @@ foreach (string nftId in nftIds)
                     recieverAddress = nftHolder.account!.address,
                     dateRecieved = TimestampConverter.ToUTCString(nftHolder.createdAtTransaction!.block!.timestamp),
                     transactionId = nftHolder.createdAtTransaction.id,
-                    transactionType = "Withdrawn but deposited back to L2",
+                    transactionType = "Withdrawn to L1 but deposited back to L2",
                     fullNftId = depositedBackIntoLayer2FullNftId,
                     balance = nftHolder.balance.ToString()
                 });
