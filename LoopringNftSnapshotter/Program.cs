@@ -9,7 +9,7 @@ using System.Globalization;
 //Leave this setting to 0 if you want to grab from the latest layer 1 block,
 //If this snapshot runs for an extended amount of time it might grab data from a more recent block so you might want to specify the block number for the snapshot for your users
 //If you modify this number remember it must be the layer 1 block number, not the layer 2 block number
-int layerOneBlockNumber = 0; 
+int layerOneBlockNumber = 0;
 
 //Initialize objects
 LoopringGraphQLService loopringGraphQLService = new LoopringGraphQLService("https://gateway.thegraph.com/api/294a874dfcbae25bcca653a7f56cfb63/subgraphs/id/7QP7oCLbEAjejkp7wSLTD1zbRMSiDydAmALksBB5E6i1");
@@ -18,7 +18,7 @@ List<NftHolder> nftHolders = new List<NftHolder>();
 List<NftHolder> nftHoldersErrors = new List<NftHolder>();
 
 //Load nfts from text file
-using(StreamReader sr = new StreamReader("nftIds.txt"))
+using (StreamReader sr = new StreamReader("nftIds.txt"))
 {
     string nftId;
     while ((nftId = sr.ReadLine()!) != null)
@@ -31,7 +31,7 @@ using(StreamReader sr = new StreamReader("nftIds.txt"))
 Console.WriteLine("Working...");
 Stopwatch stopWatch = new Stopwatch();
 stopWatch.Start();
-foreach(string nftId in nftIds)
+foreach (string nftId in nftIds)
 {
     if (nftId.Contains("-") && nftId.Split('-').Length == 5)
     {
@@ -42,16 +42,49 @@ foreach(string nftId in nftIds)
         Console.WriteLine("The full NFT ID needs to be in the form: nftMinterAddress-nftType-nftTokenAddress-nftId-nftRoyaltyPercentage");
         continue;
     }
+
+    //Check for layer 2 transactions
     List<AccountNFTSlot> accountNftSlots = new List<AccountNFTSlot>();
+    bool hasOriginalNftIdHolders = false;
     int page = 0;
     do
     {
         accountNftSlots = await loopringGraphQLService.GetNftHolders(nftId, skip: page * 25, layerOneBlockNumber: layerOneBlockNumber);
-        if (accountNftSlots.Count == 0 && page == 0) //No holders or issue with the graph
+        foreach (var nftHolder in accountNftSlots)
         {
-            nftHoldersErrors.Add(new NftHolder() 
-            { recieverAddress = "N/A",
-              fullNftId = nftId 
+            if(page == 0)
+            {
+                hasOriginalNftIdHolders = true;
+            }
+            nftHolders.Add(new NftHolder()
+            {
+                recieverAddress = nftHolder.account!.address,
+                dateRecieved = TimestampConverter.ToUTCString(nftHolder.createdAtTransaction!.block!.timestamp),
+                transactionId = nftHolder.createdAtTransaction.id,
+                transactionType = nftHolder.createdAtTransaction.typeName,
+                fullNftId = nftId,
+                balance = nftHolder.balance.ToString()
+            });
+        }
+
+        page++;
+    } while (accountNftSlots.Count > 0);
+
+    //Check for any deposits back into layer 2 from layer 1, these essentially get reminted
+    page = 0;
+    string[] depositedBackIntoLayer2FullNftIdArray = nftId.Split('-');
+    depositedBackIntoLayer2FullNftIdArray[0] = depositedBackIntoLayer2FullNftIdArray[2]; //minter address becomes token address
+    depositedBackIntoLayer2FullNftIdArray[4] = "0"; //royalty percentage becomes 0
+    string depositedBackIntoLayer2FullNftId = string.Join("-", depositedBackIntoLayer2FullNftIdArray);
+    do
+    {
+        accountNftSlots = await loopringGraphQLService.GetNftHolders(depositedBackIntoLayer2FullNftId, skip: page * 25, layerOneBlockNumber: layerOneBlockNumber);
+        if (accountNftSlots.Count == 0 && hasOriginalNftIdHolders == false && page == 0) //No holders or issue with the graph
+        {
+            nftHoldersErrors.Add(new NftHolder()
+            {
+                recieverAddress = "N/A",
+                fullNftId = nftId
             });
         }
         else
@@ -59,14 +92,16 @@ foreach(string nftId in nftIds)
             foreach (var nftHolder in accountNftSlots)
             {
                 nftHolders.Add(new NftHolder()
-                { recieverAddress = nftHolder.account!.address,
+                {
+                    recieverAddress = nftHolder.account!.address,
                     dateRecieved = TimestampConverter.ToUTCString(nftHolder.createdAtTransaction!.block!.timestamp),
                     transactionId = nftHolder.createdAtTransaction.id,
-                    transactionType = nftHolder.createdAtTransaction.typeName,
-                    fullNftId = nftId,
+                    transactionType = "Withdrawn but deposited back to L2",
+                    fullNftId = depositedBackIntoLayer2FullNftId,
                     balance = nftHolder.balance.ToString()
-                }) ;
+                });
             }
+
         }
         page++;
     } while (accountNftSlots.Count > 0);
