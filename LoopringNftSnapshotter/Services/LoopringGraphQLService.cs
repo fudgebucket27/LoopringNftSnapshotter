@@ -1312,7 +1312,7 @@ namespace LoopringNftSnapshotter.Services
                 query = nonFungibleTokensQuery,
                 variables = new
                 {
-                    where = new 
+                    where = new
                     {
                         token_in = new List<string> { tokenAddress } //avoid invalid argument error with graph when using "token" string instead of "token_in"
                     },
@@ -1595,12 +1595,16 @@ namespace LoopringNftSnapshotter.Services
             {
                 var response = await _client.PostAsync(request, cancellationToken);
                 JObject jresponse = JObject.Parse(response.Content!);
-                JToken result = jresponse["data"]!["nonFungibleToken"]!["slots"]!;
-                return result.ToObject<List<AccountNFTSlot>>()!;
-            }
-            catch (InvalidOperationException) //Thrown when slots is null. Don't care about this
-            {
-                return new List<AccountNFTSlot>();
+                if(jresponse["data"]!["nonFungibleToken"].HasValues)
+                {
+                    JToken result = jresponse["data"]!["nonFungibleToken"]!["slots"]!;
+                    return result.ToObject<List<AccountNFTSlot>>()!;
+                }
+                else
+                {
+                    return new List<AccountNFTSlot>();
+                }
+
             }
             catch (Exception ex)
             {
