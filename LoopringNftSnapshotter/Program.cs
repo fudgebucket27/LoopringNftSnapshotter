@@ -23,7 +23,7 @@ using(StreamReader sr = new StreamReader("nftIds.txt"))
     string nftId;
     while ((nftId = sr.ReadLine()!) != null)
     {
-        nftIds.Add(nftId.Trim());
+        nftIds.Add(nftId.ToLower().Trim());
     }
 }
 
