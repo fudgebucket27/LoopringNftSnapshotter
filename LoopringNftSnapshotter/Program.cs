@@ -9,7 +9,7 @@ using System.Globalization;
 //Leave this setting to 0 if you want to grab from the latest layer 1 block,
 //If this snapshot runs for an extended amount of time it might grab data from a more recent block so you might want to specify the block number for the snapshot for your users
 //If you modify this number remember it must be the layer 1 block number, not the layer 2 block number
-int layerOneBlockNumber = 15412175;
+int layerOneBlockNumber = 0;//15412175
 
 //Initialize objects
 LoopringGraphQLService loopringGraphQLService = new LoopringGraphQLService("https://gateway.thegraph.com/api/294a874dfcbae25bcca653a7f56cfb63/subgraphs/id/7QP7oCLbEAjejkp7wSLTD1zbRMSiDydAmALksBB5E6i1");
@@ -45,6 +45,7 @@ foreach (string nftId in nftIds)
 
     //Check for layer 2 transactions
     List<AccountNFTSlot> accountNftSlots = new List<AccountNFTSlot>();
+    bool hasOriginalNftIdHolders = false;
     int page = 0;
     do
     {
@@ -59,8 +60,13 @@ foreach (string nftId in nftIds)
         }
         else
         {
+            if (page == 0)
+            {
+                hasOriginalNftIdHolders = true;
+            }
             foreach (var nftHolder in accountNftSlots)
             {
+
                 nftHolders.Add(new NftHolder()
                 {
                     recieverAddress = nftHolder.account!.address,
@@ -75,17 +81,20 @@ foreach (string nftId in nftIds)
         page++;
     } while (accountNftSlots.Count > 0);
 
-    /*
     //Check for any deposits back into layer 2 from layer 1, these essentially get reminted
     page = 0;
     string[] depositedBackIntoLayer2FullNftIdArray = nftId.Split('-');
     depositedBackIntoLayer2FullNftIdArray[0] = depositedBackIntoLayer2FullNftIdArray[2]; //minter address becomes token address
     depositedBackIntoLayer2FullNftIdArray[4] = "0"; //royalty percentage becomes 0
     string depositedBackIntoLayer2FullNftId = string.Join("-", depositedBackIntoLayer2FullNftIdArray);
+    if(depositedBackIntoLayer2FullNftId == nftId)
+    {
+        continue; //this was already processed 
+    }
     do
     {
         accountNftSlots = await loopringGraphQLService.GetNftHolders(depositedBackIntoLayer2FullNftId, skip: page * 25, layerOneBlockNumber: layerOneBlockNumber);
-        if (accountNftSlots.Count == 0 && hasOriginalNftIdHolders == false && page == 0) //No holders or issue with the graph
+        if (accountNftSlots.Count == 0 && hasOriginalNftIdHolders == true && page == 0) //No holders or issue with the graph
         {
             nftHoldersErrors.Add(new NftHolder()
             {
@@ -111,7 +120,6 @@ foreach (string nftId in nftIds)
         }
         page++;
     } while (accountNftSlots.Count > 0);
-    */
 }
 stopWatch.Stop();
 Console.WriteLine($"Gathered holders in {stopWatch.Elapsed.ToString("hh\\:mm\\:ss\\.ff")}");
