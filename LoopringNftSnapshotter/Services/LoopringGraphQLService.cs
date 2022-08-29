@@ -1596,7 +1596,7 @@ namespace LoopringNftSnapshotter.Services
                 var response = await _client.PostAsync(request, cancellationToken);
                 JObject jresponse = JObject.Parse(response.Content!);
                 JToken result = jresponse["data"]!["nonFungibleToken"]!["slots"]!;
-                return result.ToObject<List<AccountNFTSlot>>();
+                return result.ToObject<List<AccountNFTSlot>>()!;
             }
             catch(InvalidOperationException)
             {
