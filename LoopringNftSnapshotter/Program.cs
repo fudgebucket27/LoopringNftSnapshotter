@@ -70,7 +70,7 @@ foreach (string nftId in nftIds)
         page++;
     } while (accountNftSlots.Count > 0);
 
-    //Check for any deposits back into layer 2 from layer 1
+    //Check for any deposits back into layer 2 from layer 1, these essentially get reminted
     page = 0;
     string[] depositedBackIntoLayer2FullNftIdArray = nftId.Split('-');
     depositedBackIntoLayer2FullNftIdArray[0] = depositedBackIntoLayer2FullNftIdArray[2]; //minter address becomes token address
