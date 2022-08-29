@@ -9,7 +9,7 @@ using System.Globalization;
 //Leave this setting to 0 if you want to grab from the latest layer 1 block,
 //If this snapshot runs for an extended amount of time it might grab data from a more recent block so you might want to specify the block number for the snapshot for your users
 //If you modify this number remember it must be the layer 1 block number, not the layer 2 block number
-int layerOneBlockNumber = 15412175;//15412175
+int layerOneBlockNumber = 0;//
 
 //Initialize objects
 LoopringGraphQLService loopringGraphQLService = new LoopringGraphQLService("https://gateway.thegraph.com/api/294a874dfcbae25bcca653a7f56cfb63/subgraphs/id/7QP7oCLbEAjejkp7wSLTD1zbRMSiDydAmALksBB5E6i1");
