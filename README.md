@@ -21,7 +21,7 @@ nftMinterAddress-nftType-nftTokenAddress-nftId-nftRoyaltyPercentage
 ```
 Once you have setup line 12 and input your nft ids you can then run the program in your IDE.
 
-Two CSV reports will be output after the snapshot has run, one with the holders and another with errors. The subgraph will not return holders if the NFT is withdrawn to layer 1 or if the fullNftId can not be found, you will find these in the errors CSV report.
+Two CSV reports will be output after the snapshot has run, one with the holders and another with errors. The subgraph will not return holders if the NFT is withdrawn to layer 1 and not deposited back to layer 2 or if the fullNftId can not be found in the specified layer one block number, you will find these in the errors CSV report.
 
 ## Credits
 ItsMonty.eth for help with the subgraph queries
