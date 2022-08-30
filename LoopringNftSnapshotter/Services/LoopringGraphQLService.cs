@@ -1598,6 +1598,10 @@ namespace LoopringNftSnapshotter.Services
                 JToken result = jresponse["data"]!["nonFungibleToken"]!["slots"]!;
                 return result.ToObject<List<AccountNFTSlot>>()!;
             }
+            catch(NullReferenceException)
+            {
+
+            }
             catch(InvalidOperationException)
             {
                return new List<AccountNFTSlot>();
