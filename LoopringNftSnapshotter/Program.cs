@@ -99,11 +99,11 @@ foreach (string nftId in nftIds)
 
     while (true)
     {
-        IList<AccountNFTSlot>? accountNftSlots = await loopringGraphQLService.GetNftHolders(nftId, 0, 200, "id", "asc",
+        IList<AccountNFTSlot>? accountNftSlots = await loopringGraphQLService.GetNftHolders(depositedBackIntoLayer2FullNftId, 0, 200, "id", "asc",
                         lastSlotID == null ? null : new { id_gt = lastSlotID }, layerOneBlockNumber: layerOneBlockNumber)!;
         if ((accountNftSlots == null) || (accountNftSlots.Count == 0)) //No holders or issue with the graph
         {
-
+            break;
         }
         else
         {
