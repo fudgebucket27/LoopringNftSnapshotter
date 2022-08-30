@@ -52,20 +52,14 @@ foreach (string nftId in nftIds)
         accountNftSlots = await loopringGraphQLService.GetNftHolders(nftId, skip: page * 25, layerOneBlockNumber: layerOneBlockNumber);
         if (accountNftSlots.Count == 0 && page == 0) //No holders or issue with the graph
         {
-            nftHoldersErrors.Add(new NftHolder()
-            {
-                recieverAddress = "N/A",
-                fullNftId = nftId
-            });
+  
         }
         else
         {
+            hasOriginalNftIdHolders = true;
             foreach (var nftHolder in accountNftSlots)
             {
-                if (page == 0)
-                {
-                    hasOriginalNftIdHolders = true;
-                }
+
                 nftHolders.Add(new NftHolder()
                 {
                     recieverAddress = nftHolder.account!.address,
@@ -95,14 +89,11 @@ foreach (string nftId in nftIds)
         accountNftSlots = await loopringGraphQLService.GetNftHolders(depositedBackIntoLayer2FullNftId, skip: page * 25, layerOneBlockNumber: layerOneBlockNumber);
         if (accountNftSlots.Count == 0 && page == 0 && hasOriginalNftIdHolders == false) //No holders or issue with the graph
         {
-            if(!nftHoldersErrors.Where(x=> x.fullNftId == nftId).Any() || !nftHoldersErrors.Where(x => x.fullNftId == depositedBackIntoLayer2FullNftId).Any())
+            nftHoldersErrors.Add(new NftHolder()
             {
-                nftHoldersErrors.Add(new NftHolder()
-                {
-                    recieverAddress = "N/A",
-                    fullNftId = nftId
-                });
-            }
+                recieverAddress = "N/A",
+                fullNftId = nftId
+            });
         }
         else
         {
