@@ -1475,7 +1475,9 @@ namespace LoopringNftSnapshotter.Services
             }
         }
 
-        public async Task<List<AccountNFTSlot>> GetNftHolders(string nftId, int skip = 0, int layerOneBlockNumber = 0, int first = 25, string orderBy = "balance", string orderDirection = "desc", CancellationToken cancellationToken = default)
+        public async Task<List<AccountNFTSlot>> GetNftHolders(string nftId, int skip = 0, int first = 25,
+            string orderBy = "balance", string orderDirection = "desc", object? slotWhere = null, int layerOneBlockNumber = 0,
+            CancellationToken cancellationToken = default)
         {
             var nftHolders = @"
             query nftHolders(
@@ -1484,6 +1486,7 @@ namespace LoopringNftSnapshotter.Services
                 $nftId: String
                 $orderBy: String
                 $orderDirection: String
+                $slotWhere: AccountNFTSlot_filter
             )
             {
                 nonFungibleToken(
@@ -1495,6 +1498,7 @@ namespace LoopringNftSnapshotter.Services
                         first: $first
                         orderBy: $orderBy
                         orderDirection: $orderDirection
+                        where: $slotWhere
                     ) 
                     {
                         account {
@@ -1522,6 +1526,7 @@ namespace LoopringNftSnapshotter.Services
                 $orderDirection: String
                 $blockNumber: BigInt
                 $blockHeight: Block_height
+                $slotWhere: AccountNFTSlot_filter
             )
             {
                 nonFungibleToken(
@@ -1534,6 +1539,7 @@ namespace LoopringNftSnapshotter.Services
                         first: $first
                         orderBy: $orderBy
                         orderDirection: $orderDirection
+                        where: $slotWhere
                     ) 
                     {
                         account {
@@ -1566,7 +1572,8 @@ namespace LoopringNftSnapshotter.Services
                         skip = skip,
                         nftId = nftId,
                         orderBy = orderBy,
-                        orderDirection = orderDirection
+                        orderDirection = orderDirection,
+                        slotWhere = slotWhere
                     }
                 });
             }
@@ -1585,7 +1592,8 @@ namespace LoopringNftSnapshotter.Services
                         blockHeight = new
                         {
                             number = layerOneBlockNumber,
-                        }
+                        },
+                        slotWhere = slotWhere
                     }
                 });
             }

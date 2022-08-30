@@ -44,15 +44,16 @@ foreach (string nftId in nftIds)
     }
 
     //Check for layer 2 transactions
-    List<AccountNFTSlot> accountNftSlots = new List<AccountNFTSlot>();
+    
     bool hasOriginalNftIdHolders = false;
-    int page = 0;
-    do
+    string? lastSlotID = null;
+    while (true)
     {
-        accountNftSlots = await loopringGraphQLService.GetNftHolders(nftId, skip: page * 25, layerOneBlockNumber: layerOneBlockNumber);
-        if (accountNftSlots.Count == 0 && page == 0) //No holders or issue with the graph
+        IList<AccountNFTSlot>? accountNftSlots = await loopringGraphQLService.GetNftHolders(nftId, 0, 200, "id", "asc",
+                        lastSlotID == null ? null : new { id_gt = lastSlotID }, layerOneBlockNumber: layerOneBlockNumber)!;
+        if ((accountNftSlots == null) || (accountNftSlots.Count == 0)) //No holders or issue with the graph
         {
-  
+            break;
         }
         else
         {
@@ -71,11 +72,12 @@ foreach (string nftId in nftIds)
                 });
             }
         }
-        page++;
-    } while (accountNftSlots.Count > 0);
+        if (accountNftSlots.Count < 200) break;
+        lastSlotID = accountNftSlots.Last().id;
+    } 
 
     //Check for any deposits back into layer 2 from layer 1, these essentially get reminted
-    page = 0;
+    lastSlotID = null;
     bool hasDepositedBackIntoLayer2NftIdHolders = false;
     string[] depositedBackIntoLayer2FullNftIdArray = nftId.Split('-');
     depositedBackIntoLayer2FullNftIdArray[0] = depositedBackIntoLayer2FullNftIdArray[2]; //minter address becomes token address
@@ -95,12 +97,13 @@ foreach (string nftId in nftIds)
         continue; 
     }
 
-    do
+    while (true)
     {
-        accountNftSlots = await loopringGraphQLService.GetNftHolders(depositedBackIntoLayer2FullNftId, skip: page * 25, layerOneBlockNumber: layerOneBlockNumber);
-        if (accountNftSlots.Count == 0 && page == 0) //No holders or issue with the graph
+        IList<AccountNFTSlot>? accountNftSlots = await loopringGraphQLService.GetNftHolders(depositedBackIntoLayer2FullNftId, 0, 200, "id", "asc",
+                        lastSlotID == null ? null : new { id_gt = lastSlotID }, layerOneBlockNumber: layerOneBlockNumber)!;
+        if ((accountNftSlots == null) || (accountNftSlots.Count == 0)) //No holders or issue with the graph
         {
-
+            break;
         }
         else
         {
@@ -119,8 +122,9 @@ foreach (string nftId in nftIds)
             }
 
         }
-        page++;
-    } while (accountNftSlots.Count > 0);
+        if (accountNftSlots.Count < 200) break;
+        lastSlotID = accountNftSlots.Last().id;
+    } 
 
     if(!hasOriginalNftIdHolders && !hasDepositedBackIntoLayer2NftIdHolders)
     {
