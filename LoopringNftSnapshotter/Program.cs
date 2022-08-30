@@ -82,7 +82,7 @@ foreach (string nftId in nftIds)
     depositedBackIntoLayer2FullNftIdArray[4] = "0"; //royalty percentage becomes 0
     string depositedBackIntoLayer2FullNftId = string.Join("-", depositedBackIntoLayer2FullNftIdArray);
     
-    if(depositedBackIntoLayer2FullNftId == nftId)
+    if(depositedBackIntoLayer2FullNftId == nftId) //this was already processed
     {
         if (!hasOriginalNftIdHolders)
         {
@@ -92,7 +92,7 @@ foreach (string nftId in nftIds)
                 fullNftId = nftId
             });
         }
-        continue; //this was already processed 
+        continue; 
     }
 
     do
