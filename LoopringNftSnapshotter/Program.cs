@@ -93,9 +93,9 @@ foreach (string nftId in nftIds)
     do
     {
         accountNftSlots = await loopringGraphQLService.GetNftHolders(depositedBackIntoLayer2FullNftId, skip: page * 25, layerOneBlockNumber: layerOneBlockNumber);
-        if (accountNftSlots.Count == 0 && page == 0) //No holders or issue with the graph
+        if (accountNftSlots.Count == 0 && page == 0 && hasOriginalNftIdHolders == false) //No holders or issue with the graph
         {
-            if(!nftHoldersErrors.Where(x=> x.fullNftId == nftId).Any() && !nftHoldersErrors.Where(x => x.fullNftId == depositedBackIntoLayer2FullNftId).Any())
+            if(!nftHoldersErrors.Where(x=> x.fullNftId == nftId).Any() || !nftHoldersErrors.Where(x => x.fullNftId == depositedBackIntoLayer2FullNftId).Any())
             {
                 nftHoldersErrors.Add(new NftHolder()
                 {
