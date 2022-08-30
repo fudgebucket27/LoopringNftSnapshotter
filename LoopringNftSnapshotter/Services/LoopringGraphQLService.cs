@@ -1600,7 +1600,7 @@ namespace LoopringNftSnapshotter.Services
             }
             catch(NullReferenceException)
             {
-
+                return new List<AccountNFTSlot>();
             }
             catch(InvalidOperationException)
             {
