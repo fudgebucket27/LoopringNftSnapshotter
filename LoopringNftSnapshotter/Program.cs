@@ -81,10 +81,20 @@ foreach (string nftId in nftIds)
     depositedBackIntoLayer2FullNftIdArray[0] = depositedBackIntoLayer2FullNftIdArray[2]; //minter address becomes token address
     depositedBackIntoLayer2FullNftIdArray[4] = "0"; //royalty percentage becomes 0
     string depositedBackIntoLayer2FullNftId = string.Join("-", depositedBackIntoLayer2FullNftIdArray);
+    
     if(depositedBackIntoLayer2FullNftId == nftId)
     {
+        if (!hasOriginalNftIdHolders)
+        {
+            nftHoldersErrors.Add(new NftHolder()
+            {
+                recieverAddress = "N/A",
+                fullNftId = nftId
+            });
+        }
         continue; //this was already processed 
     }
+
     do
     {
         accountNftSlots = await loopringGraphQLService.GetNftHolders(depositedBackIntoLayer2FullNftId, skip: page * 25, layerOneBlockNumber: layerOneBlockNumber);
