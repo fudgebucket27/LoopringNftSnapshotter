@@ -17,7 +17,7 @@ if(args.Length == 2)
 {
     layerOneBlockNumber = Int32.Parse(args[0]); //arg 1 is layer one block number
 
-    filePath = args[1]; //arg 2 is filepath to cids file
+    filePath = args[1]; //arg 2 is filepath to nft ids file
 }
 
 //Initialize objects
