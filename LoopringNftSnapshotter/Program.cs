@@ -11,6 +11,11 @@ using System.Globalization;
 //If you modify this number remember it must be the layer 1 block number, not the layer 2 block number
 int layerOneBlockNumber = 0;//
 
+if(args.Length == 1)
+{
+    layerOneBlockNumber = Int32.Parse(args[0]);
+}
+
 //Initialize objects
 LoopringGraphQLService loopringGraphQLService = new LoopringGraphQLService("https://gateway.thegraph.com/api/294a874dfcbae25bcca653a7f56cfb63/subgraphs/id/7QP7oCLbEAjejkp7wSLTD1zbRMSiDydAmALksBB5E6i1");
 List<string> nftIds = new List<string>();
