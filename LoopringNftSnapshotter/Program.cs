@@ -11,9 +11,13 @@ using System.Globalization;
 //If you modify this number remember it must be the layer 1 block number, not the layer 2 block number
 int layerOneBlockNumber = 0;//
 
-if(args.Length == 1)
+string filePath = "nftIds.txt";
+
+if(args.Length == 2)
 {
-    layerOneBlockNumber = Int32.Parse(args[0]);
+    layerOneBlockNumber = Int32.Parse(args[0]); //arg 1 is layer one block number
+
+    filePath = args[1]; //arg 2 is filepath to cids file
 }
 
 //Initialize objects
@@ -23,7 +27,7 @@ List<NftHolder> nftHolders = new List<NftHolder>();
 List<NftHolder> nftHoldersErrors = new List<NftHolder>();
 
 //Load nfts from text file
-using (StreamReader sr = new StreamReader("nftIds.txt"))
+using (StreamReader sr = new StreamReader(filePath))
 {
     string nftId;
     while ((nftId = sr.ReadLine()!) != null)
