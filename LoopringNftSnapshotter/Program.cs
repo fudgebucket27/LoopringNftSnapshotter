@@ -108,6 +108,7 @@ for (int i = 0; i < numberOfBatches; i++)
         var currentIds = nftIdsDeposited.Skip(i * batchSize).Take(batchSize);
         var tasks = currentIds.Select(i => loopringGraphQLService.GetNftHolders(i, skip, 200, "id", "asc",
                    null, layerOneBlockNumber: layerOneBlockNumber));
+        accountNftSlots.AddRange(await Task.WhenAll(tasks));
         if ((accountNftSlots == null) || (accountNftSlots.Count == 0)) //No holders or issue with the graph
         {
             break;
@@ -140,15 +141,12 @@ for (int i = 0; i < numberOfBatches; i++)
         skip += 200;
     }
 }
-stopWatch.Stop();
-Console.WriteLine($"Gathered holders in {stopWatch.Elapsed.ToString("hh\\:mm\\:ss\\.ff")}");
-
-foreach(var nftOriginal in nftIds)
+foreach (var nftOriginal in nftIds)
 {
     bool exists = false;
     string[] originalfullNftIdArray = nftOriginal.ToLower().Trim().Split('-');
     string originaNftId = originalfullNftIdArray[3];
-    foreach(var fullNftId in nftIdsOnLayer2)
+    foreach (var fullNftId in nftIdsOnLayer2)
     {
         string[] fullNftIdArray = fullNftId.ToLower().Trim().Split('-');
         string nftId = fullNftIdArray[3];
@@ -170,7 +168,7 @@ foreach(var nftOriginal in nftIds)
         }
     }
 
-    if(!exists)
+    if (!exists)
     {
         nftHoldersErrors.Add(new NftHolder()
         {
@@ -179,6 +177,11 @@ foreach(var nftOriginal in nftIds)
         });
     }
 }
+
+stopWatch.Stop();
+Console.WriteLine($"Gathered holders in {stopWatch.Elapsed.ToString("hh\\:mm\\:ss\\.ff")}");
+
+
 
 //Create CSV report for errors and holders
 string dateTime = DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss");
