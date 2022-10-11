@@ -64,8 +64,10 @@ for (int i = 0; i < numberOfBatches; i++)
         else
         {
             hasOriginalNftIdHolders = true;
+            int index = 0;
             foreach (var nftHold in accountNftSlots)
             {
+           
                 foreach (var nftHolder in nftHold)
                 {
                     nftHolders.Add(new NftHolder()
@@ -74,10 +76,11 @@ for (int i = 0; i < numberOfBatches; i++)
                         dateRecieved = TimestampConverter.ToUTCString(nftHolder.createdAtTransaction!.block!.timestamp),
                         transactionId = nftHolder.createdAtTransaction.id,
                         transactionType = nftHolder.createdAtTransaction.typeName,
-                        fullNftId = currentIds.Select(i => i).FirstOrDefault(),
+                        fullNftId = currentIds.ElementAt(index),
                         balance = nftHolder.balance.ToString()
                     });
                 }
+                index++;
             }
         }
         if (accountNftSlots.Count < 200) break;
