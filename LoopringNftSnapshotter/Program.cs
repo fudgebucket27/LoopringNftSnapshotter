@@ -13,6 +13,11 @@ int layerOneBlockNumber = 0;//
 
 string filePath = "nftIds.txt";
 
+if (args.Length == 1)
+{
+    layerOneBlockNumber = Int32.Parse(args[0]); //arg 1 is layer one block number
+}
+
 if (args.Length == 2)
 {
     layerOneBlockNumber = Int32.Parse(args[0]); //arg 1 is layer one block number
