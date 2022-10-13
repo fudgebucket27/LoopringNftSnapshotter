@@ -79,7 +79,6 @@ for (int i = 0; i < numberOfBatches; i++)
             int index = 0;
             foreach (var nftHold in accountNftSlots)
             {
-           
                 foreach (var nftHolder in nftHold)
                 {
                     if(!nftIdsOnLayer2.Contains(currentIds.ElementAt(index)))
@@ -99,13 +98,12 @@ for (int i = 0; i < numberOfBatches; i++)
                 index++;
             }
         }
-        if (accountNftSlots.Count < 200) break;
+        if (accountNftSlots.All(x => x.Count < 200)) break;
         skip += 200;
     }
 
     //Check for any deposits back into layer 2 from layer 1, these essentially get reminted
     skip = 0;
-
 
     while (true)
     {
@@ -142,7 +140,7 @@ for (int i = 0; i < numberOfBatches; i++)
                 index++;
             }
         }
-        if (accountNftSlots.Count < 200) break;
+        if (accountNftSlots.All(x => x.Count < 200)) break;
         skip += 200;
     }
 }
