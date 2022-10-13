@@ -13,16 +13,28 @@ int layerOneBlockNumber = 0;//
 
 string filePath = "nftIds.txt";
 
-if(args.Length == 2)
+if (args.Length == 1)
+{
+    layerOneBlockNumber = Int32.Parse(args[0]); //arg 1 is layer one block number
+}
+
+if (args.Length == 2)
 {
     layerOneBlockNumber = Int32.Parse(args[0]); //arg 1 is layer one block number
 
     filePath = args[1]; //arg 2 is filepath to nft ids file
 }
 
+
+
 //Initialize objects
 LoopringGraphQLService loopringGraphQLService = new LoopringGraphQLService("https://gateway.thegraph.com/api/294a874dfcbae25bcca653a7f56cfb63/subgraphs/id/7QP7oCLbEAjejkp7wSLTD1zbRMSiDydAmALksBB5E6i1");
 List<string> nftIds = new List<string>();
+List<string> txIds = new List<string>();
+List<string> nftIdsOnLayer2 = new List<string>();
+List<string> nftIdsDeposited = new List<string>();
+List<string> nftIdsDepositedBackOnLayer2 = new List<string>();
+
 List<NftHolder> nftHolders = new List<NftHolder>();
 List<NftHolder> nftHoldersErrors = new List<NftHolder>();
 
@@ -33,120 +45,163 @@ using (StreamReader sr = new StreamReader(filePath))
     while ((nftId = sr.ReadLine()!) != null)
     {
         nftIds.Add(nftId.ToLower().Trim());
+        string[] depositedBackIntoLayer2FullNftIdArray = nftId.ToLower().Trim().Split('-');
+        depositedBackIntoLayer2FullNftIdArray[0] = depositedBackIntoLayer2FullNftIdArray[2]; //minter address becomes token address
+        depositedBackIntoLayer2FullNftIdArray[4] = "0"; //royalty percentage becomes 0
+        string depositedBackIntoLayer2FullNftId = string.Join("-", depositedBackIntoLayer2FullNftIdArray);
+        nftIdsDeposited.Add(depositedBackIntoLayer2FullNftId);
     }
 }
+
+var batchSize = 100;
+int numberOfBatches = (int)Math.Ceiling((double)nftIds.Count() / batchSize);
 
 //Loop through nft ids and call graph ql service to get holders
 Console.WriteLine("Working...");
 Stopwatch stopWatch = new Stopwatch();
 stopWatch.Start();
-foreach (string nftId in nftIds)
+for (int i = 0; i < numberOfBatches; i++)
 {
-    if (nftId.Contains("-") && nftId.Split('-').Length == 5)
-    {
-        //do nothing
-    }
-    else
-    {
-        Console.WriteLine("The full NFT ID needs to be in the form: nftMinterAddress-nftType-nftTokenAddress-nftId-nftRoyaltyPercentage");
-        continue;
-    }
-
     //Check for layer 2 transactions
-    
-    bool hasOriginalNftIdHolders = false;
     int skip = 0;
     while (true)
     {
-        IList<AccountNFTSlot>? accountNftSlots = await loopringGraphQLService.GetNftHolders(nftId, skip, 200, "id", "asc",
-                   null, layerOneBlockNumber: layerOneBlockNumber)!;
+        List<List<AccountNFTSlot>> accountNftSlots = new List<List<AccountNFTSlot>>();
+        var currentIds = nftIds.Skip(i * batchSize).Take(batchSize);
+        var tasks = currentIds.Select(i => loopringGraphQLService.GetNftHolders(i, skip, 200, "id", "asc",
+                   null, layerOneBlockNumber: layerOneBlockNumber));
+        accountNftSlots.AddRange(await Task.WhenAll(tasks));
         if ((accountNftSlots == null) || (accountNftSlots.Count == 0)) //No holders or issue with the graph
         {
             break;
         }
         else
         {
-            hasOriginalNftIdHolders = true;
-            foreach (var nftHolder in accountNftSlots)
+            int index = 0;
+            foreach (var nftHold in accountNftSlots)
             {
-
-                nftHolders.Add(new NftHolder()
+                foreach (var nftHolder in nftHold)
                 {
-                    recieverAddress = nftHolder.account!.address,
-                    dateRecieved = TimestampConverter.ToUTCString(nftHolder.createdAtTransaction!.block!.timestamp),
-                    transactionId = nftHolder.createdAtTransaction.id,
-                    transactionType = nftHolder.createdAtTransaction.typeName,
-                    fullNftId = nftId,
-                    balance = nftHolder.balance.ToString()
-                });
+                    if(!nftIdsOnLayer2.Contains(currentIds.ElementAt(index)))
+                    {
+                        nftIdsOnLayer2.Add(currentIds.ElementAt(index));
+                    }
+                    if(!txIds.Contains(nftHolder.createdAtTransaction.id))
+                    {
+                        txIds.Add(nftHolder.createdAtTransaction.id);
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                    nftHolders.Add(new NftHolder()
+                    {
+                        recieverAddress = nftHolder.account!.address,
+                        dateRecieved = TimestampConverter.ToUTCString(nftHolder.createdAtTransaction!.block!.timestamp),
+                        transactionId = nftHolder.createdAtTransaction.id,
+                        transactionType = nftHolder.createdAtTransaction.typeName,
+                        fullNftId = currentIds.ElementAt(index),
+                        balance = nftHolder.balance.ToString()
+                    });
+                }
+                index++;
             }
         }
-        if (accountNftSlots.Count < 200) break;
+        if (accountNftSlots.All(x => x.Count < 200)) break;
         skip += 200;
     }
 
     //Check for any deposits back into layer 2 from layer 1, these essentially get reminted
     skip = 0;
-    bool hasDepositedBackIntoLayer2NftIdHolders = false;
-    string[] depositedBackIntoLayer2FullNftIdArray = nftId.Split('-');
-    depositedBackIntoLayer2FullNftIdArray[0] = depositedBackIntoLayer2FullNftIdArray[2]; //minter address becomes token address
-    depositedBackIntoLayer2FullNftIdArray[4] = "0"; //royalty percentage becomes 0
-    string depositedBackIntoLayer2FullNftId = string.Join("-", depositedBackIntoLayer2FullNftIdArray);
-    
-    if(depositedBackIntoLayer2FullNftId == nftId) //this was already processed
-    {
-        if (!hasOriginalNftIdHolders)
-        {
-            nftHoldersErrors.Add(new NftHolder()
-            {
-                recieverAddress = "N/A",
-                fullNftId = nftId
-            });
-        }
-        continue; 
-    }
 
     while (true)
     {
-        IList<AccountNFTSlot>? accountNftSlots = await loopringGraphQLService.GetNftHolders(depositedBackIntoLayer2FullNftId, skip, 200, "id", "asc",
-                    null, layerOneBlockNumber: layerOneBlockNumber)!;
+        List<List<AccountNFTSlot>> accountNftSlots = new List<List<AccountNFTSlot>>();
+        var currentIds = nftIdsDeposited.Skip(i * batchSize).Take(batchSize);
+        var tasks = currentIds.Select(i => loopringGraphQLService.GetNftHolders(i, skip, 200, "id", "asc",
+                   null, layerOneBlockNumber: layerOneBlockNumber));
+        accountNftSlots.AddRange(await Task.WhenAll(tasks));
         if ((accountNftSlots == null) || (accountNftSlots.Count == 0)) //No holders or issue with the graph
         {
             break;
         }
         else
         {
-            hasDepositedBackIntoLayer2NftIdHolders = true;
-            foreach (var nftHolder in accountNftSlots)
+            int index = 0;
+            foreach (var accountNftSlot in accountNftSlots)
             {
-                nftHolders.Add(new NftHolder()
+                foreach (var nftHolder in accountNftSlot)
                 {
-                    recieverAddress = nftHolder.account!.address,
-                    dateRecieved = TimestampConverter.ToUTCString(nftHolder.createdAtTransaction!.block!.timestamp),
-                    transactionId = nftHolder.createdAtTransaction.id,
-                    transactionType = nftHolder.createdAtTransaction.typeName,
-                    fullNftId = depositedBackIntoLayer2FullNftId,
-                    balance = nftHolder.balance.ToString()
-                });
+                    if (!nftIdsDepositedBackOnLayer2.Contains(currentIds.ElementAt(index)))
+                    {
+                        nftIdsDepositedBackOnLayer2.Add(currentIds.ElementAt(index));
+                    }
+                    if (!txIds.Contains(nftHolder.createdAtTransaction.id))
+                    {
+                        txIds.Add(nftHolder.createdAtTransaction.id);
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                    nftHolders.Add(new NftHolder()
+                    {
+                        recieverAddress = nftHolder.account!.address,
+                        dateRecieved = TimestampConverter.ToUTCString(nftHolder.createdAtTransaction!.block!.timestamp),
+                        transactionId = nftHolder.createdAtTransaction.id,
+                        transactionType = nftHolder.createdAtTransaction.typeName,
+                        fullNftId = currentIds.ElementAt(index),
+                        balance = nftHolder.balance.ToString()
+                    });
+                }
+                index++;
             }
-
         }
-        if (accountNftSlots.Count < 200) break;
+        if (accountNftSlots.All(x => x.Count < 200)) break;
         skip += 200;
-    } 
+    }
+}
+foreach (var nftOriginal in nftIds)
+{
+    bool exists = false;
+    string[] originalfullNftIdArray = nftOriginal.ToLower().Trim().Split('-');
+    string originaNftId = originalfullNftIdArray[3];
+    foreach (var fullNftId in nftIdsOnLayer2)
+    {
+        string[] fullNftIdArray = fullNftId.ToLower().Trim().Split('-');
+        string nftId = fullNftIdArray[3];
+        if (originaNftId == nftId)
+        {
+            exists = true;
+            break;
+        }
+    }
 
-    if(!hasOriginalNftIdHolders && !hasDepositedBackIntoLayer2NftIdHolders)
+    foreach (var fullNftId in nftIdsDepositedBackOnLayer2)
+    {
+        string[] fullNftIdArray = fullNftId.ToLower().Trim().Split('-');
+        string nftId = fullNftIdArray[3];
+        if (originaNftId == nftId)
+        {
+            exists = true;
+            break;
+        }
+    }
+
+    if (!exists)
     {
         nftHoldersErrors.Add(new NftHolder()
         {
             recieverAddress = "N/A",
-            fullNftId = nftId
+            fullNftId = nftOriginal
         });
     }
-
 }
+
 stopWatch.Stop();
 Console.WriteLine($"Gathered holders in {stopWatch.Elapsed.ToString("hh\\:mm\\:ss\\.ff")}");
+
+
 
 //Create CSV report for errors and holders
 string dateTime = DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss");
