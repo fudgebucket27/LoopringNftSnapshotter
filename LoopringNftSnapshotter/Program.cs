@@ -78,9 +78,9 @@ for (int i = 0; i < numberOfBatches; i++)
         else
         {
             int index = 0;
-            foreach (var nftHold in accountNftSlots)
+            foreach (var accountNftSlot in accountNftSlots)
             {
-                foreach (var nftHolder in nftHold)
+                foreach (var nftHolder in accountNftSlot)
                 {
                     if(!nftIdsOnLayer2.Contains(currentIds.ElementAt(index)))
                     {
