@@ -30,6 +30,7 @@ if (args.Length == 2)
 //Initialize objects
 LoopringGraphQLService loopringGraphQLService = new LoopringGraphQLService("https://gateway.thegraph.com/api/294a874dfcbae25bcca653a7f56cfb63/subgraphs/id/7QP7oCLbEAjejkp7wSLTD1zbRMSiDydAmALksBB5E6i1");
 List<string> nftIds = new List<string>();
+List<string> txIds = new List<string>();
 List<string> nftIdsOnLayer2 = new List<string>();
 List<string> nftIdsDeposited = new List<string>();
 List<string> nftIdsDepositedBackOnLayer2 = new List<string>();
@@ -85,6 +86,14 @@ for (int i = 0; i < numberOfBatches; i++)
                     {
                         nftIdsOnLayer2.Add(currentIds.ElementAt(index));
                     }
+                    if(!txIds.Contains(nftHolder.createdAtTransaction.id))
+                    {
+                        txIds.Add(nftHolder.createdAtTransaction.id);
+                    }
+                    else
+                    {
+                        continue;
+                    }
                     nftHolders.Add(new NftHolder()
                     {
                         recieverAddress = nftHolder.account!.address,
@@ -119,13 +128,21 @@ for (int i = 0; i < numberOfBatches; i++)
         else
         {
             int index = 0;
-            foreach (var nftHold in accountNftSlots)
+            foreach (var accountNftSlot in accountNftSlots)
             {
-                foreach (var nftHolder in nftHold)
+                foreach (var nftHolder in accountNftSlot)
                 {
                     if (!nftIdsDepositedBackOnLayer2.Contains(currentIds.ElementAt(index)))
                     {
                         nftIdsDepositedBackOnLayer2.Add(currentIds.ElementAt(index));
+                    }
+                    if (!txIds.Contains(nftHolder.createdAtTransaction.id))
+                    {
+                        txIds.Add(nftHolder.createdAtTransaction.id);
+                    }
+                    else
+                    {
+                        continue;
                     }
                     nftHolders.Add(new NftHolder()
                     {
