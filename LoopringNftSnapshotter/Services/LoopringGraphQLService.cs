@@ -15,6 +15,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Numerics;
+using System.Reflection.Metadata;
 
 namespace LoopringNftSnapshotter.Services
 {
@@ -1565,6 +1566,7 @@ namespace LoopringNftSnapshotter.Services
             {
                 jObject = JObject.FromObject(new
                 {
+                    operationName = "holders",
                     query = nftHolders,
                     variables = new
                     {
@@ -1581,6 +1583,7 @@ namespace LoopringNftSnapshotter.Services
             {
                 jObject = JObject.FromObject(new
                 {
+                    operationName = "holders",
                     query = nftHoldersAtBlockNumber,
                     variables = new
                     {
@@ -1602,10 +1605,17 @@ namespace LoopringNftSnapshotter.Services
             try
             {
                 var response = await _client.PostAsync(request, cancellationToken);
-                JObject jresponse = JObject.Parse(response.Content!);
-                if(jresponse["data"]!["nonFungibleToken"].Children().ToList().Count > 0)
+                // First, parse the JSON response
+                JObject jresponse = JObject.Parse(response.Content);
+
+                // Extract the inner JSON string and parse it again
+                string innerJsonString = jresponse["data"].ToString();
+                JObject innerJson = JObject.Parse(innerJsonString);
+
+                // Now, you can safely access the nested properties
+                if (innerJson["data"]["nonFungibleToken"]["slots"].Any())
                 {
-                    JToken result = jresponse["data"]!["nonFungibleToken"]!["slots"]!;
+                    JToken result = innerJson["data"]["nonFungibleToken"]["slots"];
                     return result.ToObject<List<AccountNFTSlot>>()!;
                 }
                 else

@@ -28,7 +28,7 @@ if (args.Length == 2)
 
 
 //Initialize objects
-LoopringGraphQLService loopringGraphQLService = new LoopringGraphQLService("https://api.thegraph.com/subgraphs/name/loopring/loopring");
+LoopringGraphQLService loopringGraphQLService = new LoopringGraphQLService("https://api3.loopring.io/api/v3/forwardRequest");
 List<string> nftIds = new List<string>();
 List<string> txIds = new List<string>();
 List<string> nftIdsOnLayer2 = new List<string>();
@@ -53,7 +53,7 @@ using (StreamReader sr = new StreamReader(filePath))
     }
 }
 
-var batchSize = 100;
+var batchSize = 10;
 int numberOfBatches = (int)Math.Ceiling((double)nftIds.Count() / batchSize);
 
 //Loop through nft ids and call graph ql service to get holders
