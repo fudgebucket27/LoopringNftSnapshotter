@@ -28,7 +28,7 @@ if (args.Length == 2)
 
 
 //Initialize objects
-LoopringGraphQLService loopringGraphQLService = new LoopringGraphQLService("https://gateway-arbitrum.network.thegraph.com/api/487e9b65e178b623f5c976e761925af0/subgraphs/id/8Z15oyPLRCYzVdNbjKSU2iD8BE6Sj8PZRV4KddDuvuk2");
+LoopringGraphQLService loopringGraphQLService = new LoopringGraphQLService("https://api.thegraph.com/subgraphs/name/loopring/loopring");
 List<string> nftIds = new List<string>();
 List<string> txIds = new List<string>();
 List<string> nftIdsOnLayer2 = new List<string>();
